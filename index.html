@@ -3,164 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Cek Solar Harian</title>
-    <!-- Bootstrap 5 & Font -->
-    <link href="https://jsdelivr.net" rel="stylesheet">
+    <title>Sistem Kontrol & Mutasi Stok Solar B50</title>
+    <!-- Tailwind CSS -->
+    <script src="https://tailwindcss.com"></script>
+    <!-- Google Fonts -->
     <link href="https://googleapis.com" rel="stylesheet">
-    <link href="https://jsdelivr.net" rel="stylesheet">
-    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cloudflare.com">
     <style>
-        body { font-family: 'Ubuntu', sans-serif; background-color: #f0f2f5; }
-        .navbar-brand { font-weight: 700; letter-spacing: 0.5px; }
-        .kartu-stok { border: none; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.2s; }
-        .kartu-stok:hover { transform: translateY(-3px); }
-        .tangki-box { background: #ffffff; border-radius: 14px; padding: 15px; border-left: 5px solid #0d6efd; margin-bottom: 15px; }
-        .progress-tebal { height: 28px; border-radius: 20px; background-color: #e9ecef; overflow: hidden; }
-        .progress-text { font-weight: 700; font-size: 13px; line-height: 28px; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.4); }
-        .btn-besar { padding: 12px; font-weight: 600; border-radius: 10px; }
-        .badge-aman { background-color: #198754; color: white; padding: 6px 12px; border-radius: 30px; font-weight: bold; }
-        .table-zona { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-card { border: 1px solid #cbd5e1 !important; box-shadow: none !important; }
+        }
     </style>
 </head>
-<body>
+<body class="text-slate-800 antialiased">
 
-    <!-- Navigasi Atas -->
-    <nav class="navbar navbar-dark bg-primary shadow-sm sticky-top">
-        <div class="container-fluid d-flex justify-content-between">
-            <a class="navbar-brand fs-4" href="#"><i class="bi bi-fuel-pump-fill me-2"></i> PENCATATAN SOLAR LAPANGAN</a>
-            <span class="badge bg-light text-dark py-2 px-3 rounded-pill fw-bold" id="statusKoneksi">
-                <i class="bi bi-check-circle-fill text-success me-1"></i> Aplikasi Siap Pakai (Offline OK)
-            </span>
+    <!-- TOP NAVIGATION BAR -->
+    <header class="sticky top-0 z-50 bg-slate-900 text-white shadow-md no-print">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+            <div class="flex items-center space-x-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500 text-slate-900 shadow">
+                    <i class="fa-solid fa-gas-pump text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-amber-400">FUEL CONTROL SYSTEM</h1>
+                    <p class="text-xs text-slate-400">Sistem Kontrol Pengeluaran & Peminjaman Solar B50</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span id="networkBadge" class="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400 ring-1 ring-inset ring-emerald-500/20">
+                    <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> Offline-Ready (Lokal)
+                </span>
+            </div>
         </div>
-    </nav>
+    </header>
 
-    <div class="container my-4">
+    <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         
-        <!-- BAGIAN 1: KARTU INFORMASI STOK UTAMA -->
-        <h4 class="fw-bold text-dark mb-3"><i class="bi bi-grid-1x2-fill text-primary me-2"></i> 1. Ringkasan Sisa Solar Saat Ini</h4>
-        <div class="row g-3 mb-4">
-            <!-- Stok Fisik Sekarang -->
-            <div class="col-md-4">
-                <div class="card kartu-stok bg-dark text-white p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-uppercase small fw-bold text-white-50 m-0">Sisa Solar Fisik di Tangki</p>
-                            <h2 class="fw-bold my-2" id="txtSisaStok">13,629 L</h2>
+        <!-- SECTION 1: EXECUTIVE REAL-TIME METRICS -->
+        <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+            <!-- Stok Awal -->
+            <div class="print-card rounded-xl bg-white p-4 shadow-sm border border-slate-100">
+                <p class="text-xs font-medium text-slate-500 uppercase">Stok Awal</p>
+                <p id="mStokAwal" class="mt-2 text-xl font-bold tracking-tight text-slate-900">63.589 L</p>
+            </div>
+            <!-- Total Masuk -->
+            <div class="print-card rounded-xl bg-white p-4 shadow-sm border border-slate-100">
+                <p class="text-xs font-medium text-slate-500 uppercase">Total Masuk</p>
+                <p id="mTotalMasuk" class="mt-2 text-xl font-bold tracking-tight text-emerald-600">0 L</p>
+            </div>
+            <!-- Keluar MPR -->
+            <div class="print-card rounded-xl bg-white p-4 shadow-sm border border-slate-100">
+                <p class="text-xs font-medium text-slate-500 uppercase">Keluar MPR/IMN</p>
+                <p id="mKeluarMpr" class="mt-2 text-xl font-bold tracking-tight text-rose-600">4.000 L</p>
+            </div>
+            <!-- Keluar Kontraktor -->
+            <div class="print-card rounded-xl bg-white p-4 shadow-sm border border-slate-100">
+                <p class="text-xs font-medium text-slate-500 uppercase">Keluar Kontraktor</p>
+                <p id="mKeluarKtr" class="mt-2 text-xl font-bold tracking-tight text-rose-500">160 L</p>
+            </div>
+            <!-- Pinjaman Netto -->
+            <div class="print-card rounded-xl bg-white p-4 shadow-sm border border-slate-100">
+                <p class="text-xs font-medium text-slate-500 uppercase">Pinjaman Netto</p>
+                <p id="mPinjamanNetto" class="mt-2 text-xl font-bold tracking-tight text-amber-600">45.800 L</p>
+            </div>
+            <!-- Sisa Stok Sekarang -->
+            <div class="print-card rounded-xl bg-slate-900 p-4 shadow-sm text-white">
+                <p class="text-xs font-medium text-slate-400 uppercase">Sisa Stok Fisik</p>
+                <p id="mSisaStok" class="mt-1 text-2xl font-black tracking-tight text-amber-400">13.629 L</p>
+                <span id="mStatusStok" class="mt-1 inline-block rounded bg-emerald-500 px-1.5 py-0.5 text-[10px] font-bold text-slate-950">STOK AMAN</span>
+            </div>
+        </div>
+
+        <!-- SECTION 2: TANK GAUGES & CONTRACTOR LEDGERS -->
+        <div class="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
+            <!-- Tank Level Monitoring Indicators -->
+            <div class="print-card rounded-xl bg-white p-5 shadow-sm border border-slate-100 lg:col-span-5">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-600 mb-4"><i class="fa-solid fa-chart-pie mr-2 text-blue-500"></i>Monitoring Level Tangki</h3>
+                <div class="space-y-4">
+                    <!-- Tabung CORII -->
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span class="text-slate-600">Tangki Tabung CORII (Vertikal)</span>
+                            <span id="pTabung" class="text-blue-600">66.69%</span>
                         </div>
-                        <i class="bi bi-droplet-fill text-info fs-1"></i>
+                        <div class="w-100 h-6 bg-slate-100 rounded-lg overflow-hidden border border-slate-200 relative">
+                            <div id="bTabung" class="h-full bg-blue-500 transition-all duration-500" style="width: 66.69%"></div>
+                        </div>
                     </div>
-                    <div class="mt-2"><span class="badge-aman" id="txtStatusKeamanan">STOK AMAN</span></div>
+                    <!-- MPR/IMN -->
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span class="text-slate-600">Tangki MPR/IMN (Horisontal)</span>
+                            <span id="pMpr" class="text-amber-500">65.79%</span>
+                        </div>
+                        <div class="w-100 h-6 bg-slate-100 rounded-lg overflow-hidden border border-slate-200 relative">
+                            <div id="bMpr" class="h-full bg-amber-500 transition-all duration-500" style="width: 65.79%"></div>
+                        </div>
+                    </div>
+                    <!-- Kotak CORII -->
+                    <div>
+                        <div class="flex justify-between text-xs font-semibold mb-1">
+                            <span class="text-slate-600">Tangki Kotak CORII (Balok)</span>
+                            <span id="pKotak" class="text-emerald-600">60.71%</span>
+                        </div>
+                        <div class="w-100 h-6 bg-slate-100 rounded-lg overflow-hidden border border-slate-200 relative">
+                            <div id="bKotak" class="h-full bg-emerald-500 transition-all duration-500" style="width: 60.71%"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <!-- Total Pinjaman Keluar -->
-            <div class="col-md-4">
-                <div class="card kartu-stok bg-white p-3 border-start border-warning border-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-uppercase small fw-bold text-muted m-0">Total Solar Dipinjam Vendor</p>
-                            <h2 class="fw-bold my-2 text-warning" id="txtTotalPinjam">45,800 L</h2>
-                        </div>
-                        <i class="bi bi-person-exclamation text-warning fs-1"></i>
-                    </div>
-                    <small class="text-muted">*Belum dikembalikan ke gudang</small>
-                </div>
-            </div>
-            <!-- Total Terpakai Internal -->
-            <div class="col-md-4">
-                <div class="card kartu-stok bg-white p-3 border-start border-danger border-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-uppercase small fw-bold text-muted m-0">Solar Habis Terpakai (MPR)</p>
-                            <h2 class="fw-bold my-2 text-danger" id="txtTotalKeluar">4,000 L</h2>
-                        </div>
-                        <i class="bi bi-truck text-danger fs-1"></i>
-                    </div>
-                    <small class="text-muted">*Konsumsi operasional unit internal</small>
+
+            <!-- Vendor Outstanding Loan Balance Summary -->
+            <div class="print-card rounded-xl bg-white p-5 shadow-sm border border-slate-100 lg:col-span-7">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-600 mb-3"><i class="fa-solid fa-address-book mr-2 text-amber-500"></i>Ringkasan Saldo Pinjaman Vendor / Kontraktor</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-50 uppercase text-slate-500 border-b border-slate-200 font-semibold">
+                            <tr>
+                                <th class="px-3 py-2">Nama Vendor / Kontraktor</th>
+                                <th class="px-3 py-2 text-right">Peminjaman (L)</th>
+                                <th class="px-3 py-2 text-right">Pengembalian (L)</th>
+                                <th class="px-3 py-2 text-right text-rose-600">Total Unpaid (L)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vendorTableBody" class="divide-y divide-slate-100 font-medium">
+                            <!-- Injected dynamically by Javascript -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <!-- BAGIAN 2: VISUAL TANGKI & VENDOR -->
-        <div class="row g-4 mb-4">
-            <!-- Kondisi Fisik Tangki -->
-            <div class="col-md-6">
-                <div class="bg-white p-4 rounded-4 shadow-sm h-100">
-                    <h5 class="fw-bold text-secondary mb-3"><i class="bi bi-pie-chart-fill me-2"></i> Ketinggian Solar di Tangki (Hasil Sounding)</h5>
-                    
-                    <div class="tangki-box">
-                        <div class="d-flex justify-content-between fw-bold mb-1">
-                            <span>Tangki Tabung CORII (Silinder Vertikal)</span>
-                            <span class="text-primary" id="persenTabung">66.7%</span>
-                        </div>
-                        <div class="progress progress-tebal">
-                            <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated progress-text" id="barTabung" style="width: 66.7%">66.7% Diisi</div>
-                        </div>
-                    </div>
-
-                    <div class="tangki-box" style="border-left-color: #ffc107;">
-                        <div class="d-flex justify-content-between fw-bold mb-1">
-                            <span>Tangki Utama MPR/IMN (Silinder Horisontal)</span>
-                            <span class="text-warning" id="persenMpr">65.8%</span>
-                        </div>
-                        <div class="progress progress-tebal">
-                            <div class="progress-bar bg-warning progress-text" id="barMpr" style="width: 65.8%">65.8% Diisi</div>
-                        </div>
-                    </div>
-
-                    <div class="tangki-box" style="border-left-color: #198754;">
-                        <div class="d-flex justify-content-between fw-bold mb-1">
-                            <span>Tangki Kotak CORII (Balok)</span>
-                            <span class="text-success" id="persenKotak">60.7%</span>
-                        </div>
-                        <div class="progress progress-tebal">
-                            <div class="progress-bar bg-success progress-text" id="barKotak" style="width: 60.7%">60.7% Diisi</div>
-                        </div>
-                    </div>
+        <!-- SECTION 3: TRANSACTION ENTRY INPUT FORM -->
+        <div class="mb-6 rounded-xl bg-white p-5 shadow-sm border border-slate-100 no-print">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-600 mb-4"><i class="fa-solid fa-square-plus mr-2 text-indigo-500"></i>Input Catatan Distribusi Solar Baru</h3>
+            <form id="txForm" class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-12">
+                <div class="lg:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal</label>
+                    <input type="date" id="fDate" class="w-full rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm font-medium focus:border-indigo-500 focus:bg-white focus:outline-none" required>
                 </div>
-            </div>
-
-            <!-- Hutang Pinjaman per Kontraktor -->
-            <div class="col-md-6">
-                <div class="bg-white p-4 rounded-4 shadow-sm h-100">
-                    <h5 class="fw-bold text-secondary mb-3"><i class="bi bi-tags-fill me-2"></i> Daftar Tanggungan Pinjaman Vendor</h5>
-                    <div class="table-responsive" style="max-height: 240px;">
-                        <table class="table table-hover align-middle text-center">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Nama Vendor / Kontraktor</th>
-                                    <th>Peminjaman (L)</th>
-                                    <th>Pengembalian (L)</th>
-                                    <th>Sisa Hutang (L)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabelKontraktorAwan">
-                                <!-- Diisi otomatis oleh JS -->
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="lg:col-span-3">
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Pihak / Vendor / Unit</label>
+                    <input type="text" id="fName" placeholder="Contoh: PT MKG atau EXCA" class="w-full rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm font-medium focus:border-indigo-500 focus:bg-white focus:outline-none" required>
                 </div>
-            </div>
-        </div>
-
-        <!-- BAGIAN 3: FORM INPUT SEDERHANA -->
-        <div class="bg-white p-4 rounded-4 shadow-sm mb-4">
-            <h5 class="fw-bold text-dark mb-3"><i class="bi bi-pencil-square text-primary me-2"></i> 2. Tambah Catatan Transaksi Baru Telah Terjadi</h5>
-            <form id="formInputAwam" class="row g-3">
-                <div class="col-6 col-md-3">
-                    <label class="form-label fw-bold small text-muted">Tanggal Kejadian</label>
-                    <input type="date" class="form-control" id="txtTgl" required>
-                </div>
-                <div class="col-6 col-md-3">
-                    <label class="form-label fw-bold small text-muted">Nama Kontraktor / Jenis Unit</label>
-                    <input type="text" class="form-control" id="txtNama" placeholder="Contoh: PT MKG / EXCA / LV" required>
-                </div>
-                <div class="col-6 col-md-3">
-                    <label class="form-label fw-bold small text-muted">No. Lambung Unit / No. Surat</label>
-                    <input type="text" class="form-control" id="txtRef" placeholder="Contoh: DT-05 / SJ-88" required>
-                </div>
-                <div class="col-6 col-md-3">
-                    <label class="form-label fw-bold small text-muted">Kategori Transaksi</label>
-                    <select class="form-select bg-light fw-bold text-primary" id="txtKategori" onchange="sesuaikanFormInput()">
-                        <option value="KELUAR">Solar Keluar / Dipakai Unit</option>
-                        <option value="PINJAM">Solar Dipinjam Kontraktor</option>
-                        <option value="KEMBALI">Vendor Mengembalikan Pinjaman</option>
+                <div class="lg:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">No. Ref / Lambung / Surat</label>
